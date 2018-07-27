@@ -25,15 +25,41 @@ const todo = (state, action) => {
   }
 };
 
+// const todos = (state = [], action) => {
+//   switch(action.type) {
+//     case 'ADD_TODO':
+//       return [
+//         ...state,
+//         todo(undefined, action)
+//       ];
+//     case 'TOGGLE_TODO':
+//       return state.map(t => todo(t, action));
+//     default:
+//       return state;
+//   }
+// };
+
 const todos = (state = [], action) => {
   switch(action.type) {
     case 'ADD_TODO':
       return [
         ...state,
-        todo(undefined, action)
+        {
+          id: action.id,
+          text: action.text,
+          completed: false
+        }
       ];
     case 'TOGGLE_TODO':
-      return state.map(t => todo(t, action));
+      return state.map(todo => {
+        if(todo.id != action.id) {
+          return todo;
+        }
+        return {
+          ...todo,
+          completed: !todo.completed
+        };
+      });
     default:
       return state;
   }
@@ -49,7 +75,8 @@ const visibilityFilter = (state = 'SHOW_ALL', action) => {
 };
 
 const todoApp = combineReducers({ todos, visibilityFilter });
-const store = createStore(todoApp);
+const store = createStore(todoApp,
+  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
 
 let nextTodoId = 0;
 class TodoApp extends Component {
